@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FaceFlag — facial-movement pattern triage (proof of concept)</title>
+<style>body{font-family:system-ui,sans-serif;max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.5}
+.warn{border:3px solid #b00020;padding:1rem;background:#fff5f5}
+button{padding:.6rem 1rem;margin:.25rem;cursor:pointer}
+pre{white-space:pre-wrap;background:#f4f4f4;padding:1rem;overflow:auto}</style></head>
+<body>
+<div class="warn"><strong>PROOF OF CONCEPT — NOT CLINICALLY TESTED.</strong>
+This tool has not been tested clinically and is a proof-of-concept for research
+and software demonstration only. It is not a medical device, it does not diagnose,
+treat, or rule out any condition, and its outputs may be wrong, including false
+positives and false negatives. Do not use it to make decisions about your health.
+For any medical issue, seek a licensed healthcare professional. In an emergency,
+go to your nearest emergency room or dial 911 immediately.
+Its sensitivity and specificity are unknown: it has not been tested on labelled
+clinical cases.</div>
+<h1>FaceFlag</h1>
+<p>Guided selfie-sequence facial-movement pattern triage from landmark ratios only.
+In this demo, no photo is uploaded: the demo cases are synthetic landmark sets
+with known asymmetry ratios. A real deployment extracts landmarks on-device from
+the guided sequence (rest, raise eyebrows, close eyes tight, big smile) and
+sends only metrics JSON to the gateway. Frames never leave the device.</p>
+<p><strong>What it never does:</strong> it never says a stroke is ruled out, never
+diagnoses, and never recommends treatment. A face-only check cannot check balance,
+eyes, arm or leg strength, or speech. Sudden onset, limb weakness, or speech
+change always mean emergency care, whatever the face measurements show.</p>
+<label>Demo case:
+<select id="case">
+<option value="stroke_pattern">Lower-face-predominant pattern</option>
+<option value="peripheral_like">Whole-side pattern</option>
+<option value="indeterminate">Indeterminate pattern</option>
+<option value="symmetric">Symmetric (no clear pattern)</option>
+<option value="poor_quality">Poor quality capture</option>
+</select></label>
+<label>Tier:
+<select id="tier"><option value="frugal">frugal</option><option value="full">full</option></select></label>
+<button onclick="run()">Run demo assessment</button>
+<pre id="out">Press the button to run a demo assessment.</pre>
+<script>
+async function run(){
+  const c=document.getElementById('case').value, t=document.getElementById('tier').value;
+  const r=await fetch('/api/demo/assess?case='+encodeURIComponent(c),{method:'POST',headers:{'X-Tier':t}});
+  const j=await r.json();
+  document.getElementById('out').textContent =
+    'Zone: '+j.zone+'\nAction: '+j.action+'\nTier: '+j.tier+' (verifier_ok: '+j.verifier_ok+')\n' +
+    'Brow ratio: '+j.metrics.brow_ratio+'  Smile ratio: '+j.metrics.smile_ratio+
+    '  Eye weaker-side completeness: '+j.metrics.eye_weak_completeness+'\n\n'+j.summary;
+}
+</script>
+</body></html>
