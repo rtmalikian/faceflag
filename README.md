@@ -8,6 +8,8 @@
 > **Do not use it to make decisions about your health.** For any medical issue or concern, seek a licensed healthcare professional. **In an emergency, go to
 > your nearest emergency room or dial 911 immediately.**
 
+▶ **Try the live demo:** https://rtmalikian.github.io/faceflag/ — static preview with demo data, no backend connected.
+
 ---
 
 # FaceFlag
